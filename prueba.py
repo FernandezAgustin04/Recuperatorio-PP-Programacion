@@ -15,12 +15,13 @@ def menu():
         5 Jugar batalla\n\
         6 Guardar Json\n\
         7 Leer Json\n\
-        8 Salir del programa\n\
-        9 Requerimiento extra\
-        10 Ordenar personaje por atributo\
-        11 Generar codigo de personaje\
+        8 Requerimiento extra\n\
+        9 Ordenar personaje por atributo\n\
+        10 Generar codigo de personaje\n\
+        11 Agregar codigo\n\
+        12 Salir del programa\
         ")
-
+    
     selector = input ("Seleccione opcion: ")
     selector = str(selector)
 
@@ -80,9 +81,9 @@ def listar_raza_cantidad(lista):
 """
 PUNTO 3
 """   
-def listar_personajes_por_raza(lista):
+def listar_personajes_por_raza(lista_personajes):
     razas = {}
-    for personaje in lista:
+    for personaje in lista_personajes:
         raza = personaje["raza"]
         nombre = personaje["nombre"]
         poder_ataque = personaje["poder_de_pelea"]
@@ -130,10 +131,10 @@ def guardar_registro_batalla(ganador, perdedor):
 
 def jugar_batalla():
     eleccion_jugador = int(input("Selecciona un número del 1 al 35 para elegir tu personaje: "))
-    personaje_jugador = lista[eleccion_jugador - 1]
+    personaje_jugador = lista_personajes[eleccion_jugador - 1]
 
     eleccion_maquina = random.randint(1, 35)
-    personaje_maquina = lista[eleccion_maquina - 1]
+    personaje_maquina = lista_personajes[eleccion_maquina - 1]
 
     print(f"Tu personaje: {personaje_jugador['nombre']}")
     print(f"Personaje de la máquina: {personaje_maquina['nombre']}")
@@ -216,21 +217,12 @@ def salir_del_programa():
 
 """
 Requerimiento extra
-
 Agregar una opción que permita otorgarle un 50% más de poder de pelea y un 70% más de poder de ataque a los Saiyan, 
 y agregaran a sus habilidades la “transformación nivel dios”.
 Guardar en un archivo CSV los personajes que hayan recibido esta actualización.
 """
 
 def dragon_ball_mejorar_Saiyan(lista:list):
-    '''
-    Brief:
-        Mejora los Saiyan
-    Parameters: 
-        lista: list -> lista de personaje
-    return:
-        None
-    '''
     if type(lista) == list:
         for personaje in lista:
             raza_saiyan = False
@@ -245,14 +237,6 @@ def dragon_ball_mejorar_Saiyan(lista:list):
         print("No se ingreso una lista valida")
 
 def subir_personajes_csv(personaje:dict):
-    '''
-    Brief:
-        Sube el personaje mejorado a un archivo .csv
-    Parameters: 
-        personaje: dict -> el personaje mejorado
-    return:
-        1:int -> Hubo un error
-    '''
     if type (personaje) == dict:
         with open("Saiyan_mejorados.csv", "a") as archivo:
             for caracteristica in personaje:
@@ -262,14 +246,6 @@ def subir_personajes_csv(personaje:dict):
         return 1
 
 def agregar_lista_mejoras_personajes(personaje:dict):
-    '''
-    Brief:
-        Agrega las mejoras al personaje
-    Parameters: 
-        personaje: dict -> el personaje a mejorar
-    return:
-        1:int -> Hubo un error
-    '''
     if type (personaje) == dict:
         porcentaje_agregado = calcular_suma_porcentaje(personaje["poder_pelea"], 50)
         personaje["poder_pelea"] = porcentaje_agregado
@@ -280,16 +256,6 @@ def agregar_lista_mejoras_personajes(personaje:dict):
         return 1
 
 def calcular_suma_porcentaje(sacar_porcentaje:int, porcentaje:int):
-    '''
-    Brief:
-        Calcula los porcentajes requeridos y los suma 
-    Parameters: 
-        sacar_porcentaje: int -> entero al que le queremos calcular el porcentaje
-        porcentaje: int -> Cual es el porcentaje
-    return:
-        porcentaje_calculado: float -> el porcentaje sumado al numero ingresado
-        1:int -> Hubo un error
-    '''
     if type (sacar_porcentaje) == int and type (porcentaje) == int:
         porcentaje_calculado = sacar_porcentaje * porcentaje / 100
         porcentaje_calculado += sacar_porcentaje
@@ -301,26 +267,56 @@ def calcular_suma_porcentaje(sacar_porcentaje:int, porcentaje:int):
 """
 EJERCICIO RECUPERATORIO
 """
-def ordenar_personajes_por_atributo(lista_personajes, atributo, orden):
-    return sorted(lista_personajes, key=lambda x: x[atributo], reverse=not orden)
 
+#A
+def ordenar_personajes_por_atributo(lista_personajes):
+    atributo = input("Ingrese el atributo por el cual desea ordenar los personajes: ")
+    while atributo not in lista_personajes[0]:
+        print("Atributo inválido. Por favor, ingrese un atributo válido.")
+        atributo = input("Ingrese el atributo por el cual desea ordenar los personajes: ")
+    orden = input("Ingrese el orden de clasificación TRUE(ASCENDENTE) o FALSE(DESCENDENTE): ").upper()
+    
+    n = len(lista_personajes)
+    if orden == "DESCENDENTE":
+        for i in range(n - 1):
+            for j in range(n - 1 - i):
+                if lista_personajes[j][atributo] < lista_personajes[j + 1][atributo]:
+                    lista_personajes[j], lista_personajes[j + 1] = lista_personajes[j + 1], lista_personajes[j]
+    else:
+        for i in range(n - 1):
+            for j in range(n - 1 - i):
+                if lista_personajes[j][atributo] > lista_personajes[j + 1][atributo]:
+                    lista_personajes[j], lista_personajes[j + 1] = lista_personajes[j + 1], lista_personajes[j]
+    
+    return lista_personajes
+
+#B
 def generar_codigo_personaje(personaje):
     nombre = personaje['nombre']
     poder_ataque = personaje['poder_de_ataque']
-    poder_defensa = personaje['poder_de_defensa']
+    poder_defensa = personaje['poder_de_pelea']
     codigo = ""
-    
+
     if poder_ataque > poder_defensa:
         codigo += "A"
     elif poder_defensa > poder_ataque:
         codigo += "D"
     else:
         codigo += "AD"
-    
+
     codigo += "-" + str(max(poder_ataque, poder_defensa))
     codigo += "-" + str(personaje['id']).zfill(9)
-    
+
     return codigo
+
+def agregar_codigos_personajes(lista_personajes):
+    for personaje in lista_personajes:
+        codigo = generar_codigo_personaje(personaje)
+        personaje['codigo'] = codigo
+
+    return lista_personajes
+
+flag_tres = False           
 
 
 respuesta = True
@@ -330,19 +326,23 @@ while (respuesta == True):
     match opcion:
         case "1":
             print("Eligió 'Traer datos'")
-            lista = parser_csv("DBZ.csv")
+            lista_personajes = parser_csv("DBZ.csv")
             flag_ingreso_uno = True
         case "2":
             if flag_ingreso_uno == True:
-                print("Eligio 'Listar cantidad por raza'")
-                listar_raza_cantidad(lista)
+                if flag_tres == True:
+                    print("Eligio 'Listar cantidad por raza'")
+                    listar_raza_cantidad(lista_personajes)
+                else:
+                    print("Error, primero ingrese el 3")
             else:
                 salir_del_programa()
                 break
         case "3":
-            if flag_ingreso_uno == True:           
+            if flag_ingreso_uno == True:
+                flag_tres = True           
                 print("Eligio 'Listar personajes por raza'")
-                listar_personajes_por_raza(lista)
+                listar_personajes_por_raza(lista_personajes)
             else:
                 salir_del_programa()
                 break
@@ -350,7 +350,7 @@ while (respuesta == True):
             if flag_ingreso_uno == True:
                 print("Eligio 'Listar personajes por habilidad'")
                 habilidad = input("Ingrese habilidad  ")
-                listar_personajes_por_habilidad(lista, habilidad)
+                listar_personajes_por_habilidad(lista_personajes, habilidad)
             else:
                 salir_del_programa()
                 break
@@ -368,7 +368,7 @@ while (respuesta == True):
                 raza_ingresada = input("Ingrese la raza: ")
                 habilidad_ingresada = input("Ingrese la habilidad: ")
                 # Guardar los personajes que cumplen los criterios en un archivo JSON
-                guardar_personajes_por_raza_y_habilidad_json(lista, raza_ingresada, habilidad_ingresada)
+                guardar_personajes_por_raza_y_habilidad_json(lista_personajes, raza_ingresada, habilidad_ingresada)
             else:
                 salir_del_programa()
                 break
@@ -376,25 +376,38 @@ while (respuesta == True):
         case "7":
             if flag_punto_seis == True:
                 print("Eligio 'Leer Json'")
-                nombre_archivo = guardar_personajes_por_raza_y_habilidad_json(lista, raza_ingresada, habilidad_ingresada)
+                nombre_archivo = guardar_personajes_por_raza_y_habilidad_json(lista_personajes, raza_ingresada, habilidad_ingresada)
                 leer_personajes_desde_json(nombre_archivo)
             else:
                 salir_del_programa()
                 break
         case "8":
-            salir_del_programa()
-            break
-        case "9":
             if flag_ingreso_uno == True:
                 print("Eligio 'requerimiento extra'")
-                dragon_ball_mejorar_Saiyan()
-                pass
+                dragon_ball_mejorar_Saiyan(lista_personajes)
+                print(lista_personajes)
             else:
                 salir_del_programa()
                 break
+        case "9":
+            if flag_ingreso_uno == True:
+                print("Eligio ejercicio A del recuperatorio")
+                print(ordenar_personajes_por_atributo(lista_personajes))
         case "10":
             if flag_ingreso_uno == True:
-                print("Eligio ejercicio recuperatorio")
+                print("Codigos generados con exito")
+            else:
+                salir_del_programa()
+                break
+        case "11":
+            personajes_con_codigos = agregar_codigos_personajes(lista_personajes)
+            for personaje in personajes_con_codigos:
+                print(personaje)
+        case "12":
+            salir_del_programa()
+            break
+                        
+
                 
             
 
