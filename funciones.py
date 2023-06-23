@@ -3,7 +3,6 @@ import random
 import json
 from datetime import date
 from menu import *
-from prueba import lista_personajes
 
 flag_ingreso_uno = False
 
