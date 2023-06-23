@@ -1,5 +1,4 @@
-from menu import *
-from funciones import *
+from menu import menu
 
 menu()
 
